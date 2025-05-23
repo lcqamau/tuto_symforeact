@@ -32,7 +32,7 @@ jobs:
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           JIRA_SITE: amolecoq.atlassian.net
-          JIRA_USER_EMAIL: ton-email@exemple.com
+          JIRA_USER_EMAIL: ${{ env.JIRA_USER_EMAIL }}
         run: |
           curl --request POST \
             --url "https://${{ env.JIRA_SITE }}/rest/deployments/0.1/bulk" \
