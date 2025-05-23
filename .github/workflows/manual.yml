@@ -19,6 +19,51 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
 
-      - name: Run tests
-        run: npm test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Notify Jira of deployment
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_SITE: amolecoq.atlassian.net
+          JIRA_USER_EMAIL: ton-email@exemple.com
+        run: |
+          curl --request POST \
+            --url "https://${{ env.JIRA_SITE }}/rest/deployments/0.1/bulk" \
+            --user "${{ env.JIRA_USER_EMAIL }}:${{ env.JIRA_API_TOKEN }}" \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "deployments": [
+                {
+                  "deploymentSequenceNumber": '${{ github.run_id }}',
+                  "updateSequenceNumber": '${{ github.run_id }}',
+                  "displayName": "Deploy #${{ github.run_number }}",
+                  "description": "Déploiement GitHub Actions",
+                  "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                  "state": "successful",
+                  "lastUpdated": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",
+                  "pipeline": {
+                    "id": "${{ github.workflow }}",
+                    "displayName": "${{ github.workflow }}",
+                    "url": "https://github.com/${{ github.repository }}/actions"
+                  },
+                  "environment": {
+                    "id": "production",
+                    "displayName": "Production",
+                    "type": "production"
+                  },
+                  "associations": [
+                    {
+                      "associationType": "issueIdOrKeys",
+                      "values": ["PROJ-123"] # Tu peux parser ça automatiquement à partir de tes commits
+                    }
+                  ]
+                }
+              ]
+            }'

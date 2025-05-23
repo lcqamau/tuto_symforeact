@@ -1,2 +1,0 @@
-﻿# symforeact
-test kan-3
