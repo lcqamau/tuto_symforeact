@@ -31,7 +31,7 @@ jobs:
       - name: Notify Jira of deployment
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_SITE: ton-sous-domaine.atlassian.net
+          JIRA_SITE: amolecoq.atlassian.net
           JIRA_USER_EMAIL: ton-email@exemple.com
         run: |
           curl --request POST \
